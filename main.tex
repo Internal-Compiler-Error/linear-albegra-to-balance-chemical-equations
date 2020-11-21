@@ -5,101 +5,229 @@
 \usepackage{systeme,mathtools}
 \usepackage{url}
 \setcounter{MaxMatrixCols}{20}
+
+\let\oldquote\quote
+\let\endoldquote\endquote
+\renewenvironment{quote}[2][]
+{\if\relax\detokenize{#1}\relax
+	\def\quoteauthor{#2}%
+	\else
+	\def\quoteauthor{#2~---~#1}%
+	\fi
+	\oldquote}
+{\par\nobreak\smallskip\hfill(\quoteauthor)%
+	\endoldquote\addvspace{\bigskipamount}}
 \begin{document}
-\title{(Ab)Using Linear Algebra to Balance Chemical Reaction Equations}
-\author{Liang Wang}
-\date{\today}
-\maketitle
-
-\section{Mechanical Processes Should be Mechanical}
-Balancing chemical reaction equations is often taught as an imprecise process that involves lots of idiosyncratic tricks. While trying to balance them by hand is usually doable when the reaction is relatively simple, the process becomes less straight forward when more complex reactions are presented.
-
-However, balancing should be a fairly boring and mechanical process, and \emph{mechanical processes should be mechanical}. Using linear algebra, we could balance any arbitrary reactions without the need for tricks, instead, the process becomes simple and repeatable.
-
-\section{Abusing Linear Algebra to do Simple Math}
-The goal of balancing chemical equations is to find the appropriate coefficients such that the number of each molecules is the same for the reactants and the products. The word `balancing' should remind you of solving equations,where equality is preserved as long as the operation is done to both side of equations.
-
-Indeed, balancing chemical equations are just solving systems of linear equations. Solving system of linear equations by substitution is often tedious and error-prone. Fortunately, linear algebra provides us with simpler ways to solving such problems. 
-
-\subsection{Homogeneous Systems}
-In linear algebra, a homogeneous system refers to a equation with the form $A\vec{x} = \vec{0}$, where $A$ is a $m \times n$ matrix and $\vec{0}$ is the zero vector. When $m = n$, i.e.\ the matrix $A$ is square, the system has infinite non-trivial solutions if  $\mathrm{det}(A) \neq 0$. When the matrix is rank-deficient, there are infinite non-trivial solutions. 
-
-\section{Example}
-The following\footnote{Taken from \url{http://myweb.astate.edu/mdraganj/BalanceEqn.html}} is an example of an unbalanced chemical equation that might require so time to solve.
-\begin{center}
-	\ce{S + HNO3 -> H2SO4 + NO2 + H2O}
-\end{center}
-The complexity lies with that the number of reactants does not equate the number of products. We shall see how linear algebra simplifies the process.
-
-We assign each $x_i$ to each compound that appears in the equation from left to right. Hence we have the following system of equations.
-\begin{equation*}
-\left\{
-\quad
+	\title{(Ab)Using Linear Algebra to Balance Chemical Reaction Equations \\\& \\  A Love Letter to Mathematics}
+	\author{Liang Wang}
+	\date{\today}
+	\maketitle
+	
+	\section{Mechanical Processes Should be Mechanical}
+	Balancing chemical reaction equations is often taught as an imprecise process that involves lots of idiosyncratic tricks. While trying to balance them by hand is usually doable when the reaction is relatively simple, the process becomes less straightforward when more complex reactions are presented.
+	
+	However, balancing should be a fairly boring and mechanical process, and \emph{mechanical processes should be mechanical}. Using linear algebra, we could balance any arbitrary reactions without the need for tricks, instead, the process becomes simple and repeatable.
+	
+	\section{Abusing Linear Algebra to do Simple Math}
+	The goal of balancing chemical equations is to find the appropriate coefficients such that the number of each molecule is the same for the reactants and the products. The word `balancing' should remind you of solving equations, where equality is preserved as long as the operation is done to both sides of equations.
+	
+	Indeed, balancing chemical equations is just solving systems of linear equations. Solving a system of linear equations by substitution is often tedious and error-prone. Fortunately, linear algebra provides us with simpler ways of solving such problems. 
+	
+	\subsection{Homogeneous Systems}
+	In linear algebra, a homogeneous system refers to a equation with the form $A\vec{x} = \vec{0}$, where $A$ is a $m \times n$ matrix and $\vec{0}$ is the zero vector. When $m = n$, i.e.\ the matrix $A$ is square, the system has infinite non-trivial solutions if  $\mathrm{det}(A) \neq 0$. When the matrix is rank-deficient, there are infinite non-trivial solutions. 
+	
+	\section{Simple Example}
+	The following\footnote{Taken from \url{http://myweb.astate.edu/mdraganj/BalanceEqn.html}} is an example of an unbalanced chemical equation that might require so time to solve.
+	\begin{center}
+		\ce{S + HNO3 -> H2SO4 + NO2 + H2O}
+	\end{center}
+	The complexity lies in that the number of reactants does not equate to the number of products. We shall see how linear algebra simplifies the process.
+	
+	We assign each $x_i$ to each compound that appears in the equation from left to right. Hence we have the following system of equations.
+	\begin{equation*}
+	\ce{$x_1$S + $x_2$HNO3 -> $x_3$H2SO4 + $x_4$NO2 + $x_5$H2O} \implies
+	\left\{
+	\quad
 	\begin{aligned}
 	x_1  &= x_3 &&\text{Sulphur}\\
 	x_2  &= 2x_3 + 2x_5 &&\text{Hydrogen}\\
 	x_2  &= x_4 &&\text{Nitrogen}\\
 	3x_2 &= 4x_3 + 2x_4 + x_5 &&\text{Oxygen} \\
 	\end{aligned}
-\right.
-\end{equation*}
-Which is equivalent to the following matrix.
-\begin{equation*}
-\begin{bmatrix} 
-1 &  0 & -1 &  0 &  0 \\
-0 &  1 & -2 &  0 & -2 \\
-0 &  1 &  0 & -1 &  0 \\
-0 &  3 & -4 & -2 & -1 \\
- 
-\end{bmatrix}
-\end{equation*}
-Finding the solution set entails finding the null space basis vectors. After row operations, we get the row reduced echelon form to be.
-
-\begin{equation*}
-\begin{bmatrix}
-1 &	0	&0&	0	&-0.5 \\ 
-0 &	1	&0&	0	&-3 \\
-0 &	0	&1&	0	&-0.5 \\
-0&	0	&0&	1	&-3 \\
-
-\end{bmatrix} 
-\end{equation*}
-Meaning that there is only one free variable, $x_5$.
-\begin{equation*}
-\begin{split}
-\begin{bmatrix}
-x_1 \\
-x_2 \\
-x_3 \\
-x_4 \\
-x_5 \\
-\end{bmatrix} = 
-\begin{bmatrix}
-0.5x_5 \\ 
-3x_5 \\
-0.5x_3 \\ 
-3x_5 \\
-x_5 \\
-\end{bmatrix} = 
-x_5
-\begin{bmatrix}
-0.5 \\ 
-3 \\
-0.5 \\ 
-3 \\
-1\\
-\end{bmatrix}
-\end{split}
-\end{equation*}
-Since we want integer solutions, and $0.5x_5$ is a entry for our basis vector, we pick $x_5 = 2$ to get the smallest possible positive solution. 
-$$ \mathrm{solution} = 
-\begin{bmatrix}
-1 \\
-6 \\
-1 \\
-6 \\
-2 \\
-\end{bmatrix}
-$$
-Meaning, \ce{S + 6HNO3 -> H2SO4 + 6NO2 + 2H2O}. We see this is indeed the desired solution.
+	\right.
+	\end{equation*}
+	Which is equivalent to the following matrix.
+	\begin{equation*}
+	\begin{bmatrix} 
+	1 &  0 & -1 &  0 &  0 \\
+	0 &  1 & -2 &  0 & -2 \\
+	0 &  1 &  0 & -1 &  0 \\
+	0 &  3 & -4 & -2 & -1 \\
+	
+	\end{bmatrix}
+	\end{equation*}
+	Finding the solution set entails finding the null space basis vectors. After row operations, we get the row reduced echelon form to be.
+	
+	\begin{equation*}
+	\begin{bmatrix}
+	1 &	0	&0&	0	&-0.5 \\ 
+	0 &	1	&0&	0	&-3 \\
+	0 &	0	&1&	0	&-0.5 \\
+	0&	0	&0&	1	&-3 \\
+	
+	\end{bmatrix} 
+	\end{equation*}
+	Meaning that there is only one free variable, $x_5$.
+	\begin{equation*}
+	\begin{split}
+	\begin{bmatrix}
+	x_1 \\
+	x_2 \\
+	x_3 \\
+	x_4 \\
+	x_5 \\
+	\end{bmatrix} = 
+	\begin{bmatrix}
+	0.5x_5 \\ 
+	3x_5 \\
+	0.5x_3 \\ 
+	3x_5 \\
+	x_5 \\
+	\end{bmatrix} = 
+	x_5
+	\begin{bmatrix}
+	0.5 \\ 
+	3 \\
+	0.5 \\ 
+	3 \\
+	1\\
+	\end{bmatrix}
+	\end{split}
+	\end{equation*}
+	Since we want integer solutions, and $0.5x_5$ is a entry for our basis vector, we pick $x_5 = 2$ to get the smallest possible positive solution. 
+	$$ \mathrm{solution} = 
+	\begin{bmatrix}
+	1 \\
+	6 \\
+	1 \\
+	6 \\
+	2 \\
+	\end{bmatrix}
+	$$
+	Meaning, \ce{S + 6HNO3 -> H2SO4 + 6NO2 + 2H2O}. We see this is indeed the desired solution.
+	
+	\section{Complex Example}
+	One can say the previous example is still relatively easy and can be attempted without the use of matrices. The section provides a complex example\footnote{Taken from \url{https://www.chembuddy.com/?left=balancing-stoichiometry-questions&right=balancing-questions}} where doing it by hand is borderline torture.
+	\begin{center}
+		\ce{K4[Fe(SCN)6] + K2Cr2O7 + H2SO4 -> Fe2(SO4)3 + Cr2(SO4)3 + CO2 + H2O + K2SO4 + KNO3}
+	\end{center}
+	As usual, we assign $x_i$ to be the coefficient of each compounds from left to right. We obtain the following system of equations.
+	\begin{equation*}
+	\left\{
+	\quad
+	\begin{aligned}
+	4x_1 + 2x_2 - 2x_8  - x_9&= 0 &&\text{Potassium}\\
+	x_1 - 2x_4          &= 0 &&\text{Iron}\\
+	6x_1 + x_3- 3x_4 - 3x_5 - x_8  &= 0 &&\text{Sulphur}\\
+	6x_1 - x_6          &= 0 &&\text{Carbon} \\
+	6x_1 - x_9          &= 0 &&\text{Nitrogen}\\
+	2x_2 - 2x_5         &= 0 &&\text{Chromium}\\
+	7x_2 + 4x_3 - 12x_4 - 12x_5 - 2x_6 -x_7 - 4x_8 - 3x_9 &= 0 &&\text{Oxygen} \\
+	2x_3 - 2x_7 &= 0 && \text{Hydrogen} \\
+	\end{aligned}
+	\right.
+	\end{equation*}
+	Converting it to matrix form gives us the following.
+	$$
+	\begin{bmatrix}
+	4   &       2  &        0    &      0   &       0   &       0   &       0 &        -2  &        -1 \\
+	1   &       0  &        0    &     -2   &       0   &       0   &       0 &         0  &        0\\
+	6   &       0  &        1    &     -3   &      -3   &       0   &       0 &        -1  &        0\\
+	6   &       0  &        0    &      0   &       0   &      -1   &       0 &         0  &        0\\
+	6   &       0  &        0    &      0   &       0   &       0   &       0 &         0  &       -1\\
+	0   &       2  &        0    &      0   &      -2   &       0   &       0 &         0  &        0\\
+	0   &       7  &        4    &    -12   &     -12   &      -2   &      -1 &        -4  &       -3\\
+	0   &       0  &        2    &      0   &       0   &       0   &      -2 &         0  &        0\\
+	\end{bmatrix}
+	$$
+	We simplify the matrix to its row reduced echelon form.
+	$$
+	\begin{bmatrix}
+	1   &       0     &     0   &       0  &        0    &      0   &       0    &      0  &     -1/6\\
+	0   &       1     &     0   &       0  &        0    &      0   &       0    &      0  &   -97/36\\
+	0   &       0     &     1   &       0  &        0    &      0   &       0    &      0  &  -355/36\\
+	0   &       0     &     0   &       1  &        0    &      0   &       0    &      0  &    -1/12\\
+	0   &       0     &     0   &       0  &        1    &      0   &       0    &      0  &   -97/36\\
+	0   &       0     &     0   &       0  &        0    &      1   &       0    &      0  &       -1\\
+	0   &       0     &     0   &       0  &        0    &      0   &       1    &      0  &  -355/36\\
+	0   &       0     &     0   &       0  &        0    &      0   &       0    &      1  &   -91/36\\
+	\end{bmatrix}
+	$$
+	We write the null space basis vector in terms of our one free variable, $x_9$.
+	\begin{equation*}
+	\begin{bmatrix}
+	x_1 \\
+	x_2 \\
+	x_3 \\
+	x_4 \\
+	x_5 \\
+	x_6 \\
+	x_7 \\
+	x_8 \\
+	x_9 \\
+	\end{bmatrix}
+	= 
+	x_9
+	\begin{bmatrix}
+	1/6 \\
+	97/36 \\
+	355/36 \\
+	1/12\\
+	97/36\\
+	1\\
+	355/36\\
+	91/36\\
+	1 \\
+	\end{bmatrix}
+	\end{equation*}
+	We pick $x_9$ to the be the inverse of the least common factor, $\mathrm{lcm}\left(\dfrac{1}{6},\: \dfrac{97}{36},\: \dfrac{355}{36},\: \dfrac{1}{12},\: \dfrac{97}{36},\: 1,\: \dfrac{355}{36},\: \dfrac{91}{36},\: 1\right)^{-1} = 36$. We obtain the solution set of:
+	\begin{equation*}
+	\mathrm{solution} = 
+	\begin{bmatrix}
+	6 \\
+	97 \\
+	355 \\
+	3 \\
+	97 \\
+	36 \\
+	355 \\
+	91 \\
+	36 \\
+	\end{bmatrix}
+	\end{equation*}
+	Henceforth, the complex reaction is as follows:
+	\begin{center}
+		\ce{6 K4[Fe(SCN)6] + 97 K2Cr2O7 + 355 H2SO4 -> 3 Fe2(SO4)3 + 97 Cr2(SO4)3 + 36 CO2 + 355 H2O + 91 K2SO4 + 36 KNO3}
+	\end{center}
+	Feel free to verify the result using the \emph{magic of internet}.
+	
+	\section{A Love Letter to Mathematics}
+	\begin{quote}{Henri Poincaré}
+		The scientist does not study nature because it is useful to do so. He studies it because he takes pleasure in it, and he takes pleasure in it because it is beautiful. If nature were not beautiful it would not be worth knowing, and life would not be worth living
+	\end{quote}
+	
+	\begin{quote}{Richard Dawkins}
+		After sleeping through a hundred million centuries we have finally opened our eyes on a sumptuous planet, sparkling with colour, bountiful with life. Within decades we must close our eyes again. Isn’t it a noble, an enlightened way of spending our brief time in the sun, to work at understanding the universe and how we have come to wake up in it?
+	\end{quote}
+	
+	The world is a wonderful place filled with wonders, it is the noblest pursuit to try to understand it. One may prefer traditional science in an attempt to directly understand the world, one may find philosophy intriguing in understanding humanity. As someone majoring in software, I have always found mathematics to be the beauty that unlocks the understanding of the world. 
+	
+	Mathematics has the interesting duality of both being immensely useful while desperately trying to be abstract and devoid of the real world. G.H.\ Hardy, the famous English mathematician that worked with the great Srinivasa Ramanujan---famously depicted in the film \textit{The Man Who Knew Infinity} once said:
+	\begin{quote}{G.H.\ Hardy}
+		We have concluded that trivial mathematics is, on the whole, useful, and that the real mathematics, on the whole, is not.
+	\end{quote}
+	
+	Most mathematics, such as Group Theory, Category Theory, and Topology try to be as abstract as possible. Yet they all have proved to be critical tools in understanding large software. The concept of a monoid seems completely out of touch with reality until you realize it's everywhere in programming languages. 
+	
+	Embrace mathematics both for its abstract beauty and the applications, for which it is the language of both the abstract world and the world we live in.
 \end{document}

@@ -1,0 +1,105 @@
+\documentclass{article}
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage[version=4]{mhchem}
+\usepackage{amsmath}
+\usepackage{systeme,mathtools}
+\usepackage{url}
+\setcounter{MaxMatrixCols}{20}
+\begin{document}
+\title{(Ab)Using Linear Algebra to Balance Chemical Reaction Equations}
+\author{Liang Wang}
+\date{\today}
+\maketitle
+
+\section{Mechanical Processes Should be Mechanical}
+Balancing chemical reaction equations is often taught as an imprecise process that involves lots of idiosyncratic tricks. While trying to balance them by hand is usually doable when the reaction is relatively simple, the process becomes less straight forward when more complex reactions are presented.
+
+However, balancing should be a fairly boring and mechanical process, and \emph{mechanical processes should be mechanical}. Using linear algebra, we could balance any arbitrary reactions without the need for tricks, instead, the process becomes simple and repeatable.
+
+\section{Abusing Linear Algebra to do Simple Math}
+The goal of balancing chemical equations is to find the appropriate coefficients such that the number of each molecules is the same for the reactants and the products. The word `balancing' should remind you of solving equations,where equality is preserved as long as the operation is done to both side of equations.
+
+Indeed, balancing chemical equations are just solving systems of linear equations. Solving system of linear equations by substitution is often tedious and error-prone. Fortunately, linear algebra provides us with simpler ways to solving such problems. 
+
+\subsection{Homogeneous Systems}
+In linear algebra, a homogeneous system refers to a equation with the form $A\vec{x} = \vec{0}$, where $A$ is a $m \times n$ matrix and $\vec{0}$ is the zero vector. When $m = n$, i.e.\ the matrix $A$ is square, the system has infinite non-trivial solutions if  $\mathrm{det}(A) \neq 0$. When the matrix is rank-deficient, there are infinite non-trivial solutions. 
+
+\section{Example}
+The following\footnote{Taken from \url{http://myweb.astate.edu/mdraganj/BalanceEqn.html}} is an example of an unbalanced chemical equation that might require so time to solve.
+\begin{center}
+	\ce{S + HNO3 -> H2SO4 + NO2 + H2O}
+\end{center}
+The complexity lies with that the number of reactants does not equate the number of products. We shall see how linear algebra simplifies the process.
+
+We assign each $x_i$ to each compound that appears in the equation from left to right. Hence we have the following system of equations.
+\begin{equation*}
+\left\{
+\quad
+	\begin{aligned}
+	x_1  &= x_3 &&\text{Sulphur}\\
+	x_2  &= 2x_3 + 2x_5 &&\text{Hydrogen}\\
+	x_2  &= x_4 &&\text{Nitrogen}\\
+	3x_2 &= 4x_3 + 2x_4 + x_5 &&\text{Oxygen} \\
+	\end{aligned}
+\right.
+\end{equation*}
+Which is equivalent to the following matrix.
+\begin{equation*}
+\begin{bmatrix} 
+1 &  0 & -1 &  0 &  0 \\
+0 &  1 & -2 &  0 & -2 \\
+0 &  1 &  0 & -1 &  0 \\
+0 &  3 & -4 & -2 & -1 \\
+ 
+\end{bmatrix}
+\end{equation*}
+Finding the solution set entails finding the null space basis vectors. After row operations, we get the row reduced echelon form to be.
+
+\begin{equation*}
+\begin{bmatrix}
+1 &	0	&0&	0	&-0.5 \\ 
+0 &	1	&0&	0	&-3 \\
+0 &	0	&1&	0	&-0.5 \\
+0&	0	&0&	1	&-3 \\
+
+\end{bmatrix} 
+\end{equation*}
+Meaning that there is only one free variable, $x_5$.
+\begin{equation*}
+\begin{split}
+\begin{bmatrix}
+x_1 \\
+x_2 \\
+x_3 \\
+x_4 \\
+x_5 \\
+\end{bmatrix} = 
+\begin{bmatrix}
+0.5x_5 \\ 
+3x_5 \\
+0.5x_3 \\ 
+3x_5 \\
+x_5 \\
+\end{bmatrix} = 
+x_5
+\begin{bmatrix}
+0.5 \\ 
+3 \\
+0.5 \\ 
+3 \\
+1\\
+\end{bmatrix}
+\end{split}
+\end{equation*}
+Since we want integer solutions, and $0.5x_5$ is a entry for our basis vector, we pick $x_5 = 2$ to get the smallest possible positive solution. 
+$$ \mathrm{solution} = 
+\begin{bmatrix}
+1 \\
+6 \\
+1 \\
+6 \\
+2 \\
+\end{bmatrix}
+$$
+Meaning, \ce{S + 6HNO3 -> H2SO4 + 6NO2 + 2H2O}. We see this is indeed the desired solution.
+\end{document}
